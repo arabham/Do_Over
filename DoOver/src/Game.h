@@ -13,6 +13,9 @@ public:
 	void Run();
 	void Destroy();
 
+	int windowWidth;
+	int windowHeight;
+
 private:
 	bool isRunning;
 	SDL_Window* window;
