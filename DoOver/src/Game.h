@@ -1,6 +1,8 @@
 #pragma once
 #include <SDL.h>
 #include <SDL_image.h>
+#include <glm/glm.hpp>
+
 
 class Game
 {
@@ -20,6 +22,7 @@ public:
 
 private:
 	bool isRunning;
+	int millisecsPreviousFrame = 0;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 };
