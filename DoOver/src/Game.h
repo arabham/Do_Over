@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL.h>
+#include <SDL_image.h>
 
 class Game
 {
@@ -8,6 +9,7 @@ public:
 	~Game();
 	void Initialize();
 	void ProcessInput();
+	void Setup();
 	void Update();
 	void Render();
 	void Run();
