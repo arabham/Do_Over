@@ -1,10 +1,12 @@
 #include "Game.h"
-#include "Logger.h"
+#include "../Logger/Logger.h"
 
 Game::Game()
 {
 	isRunning = false;
 	Logger::Log("Game constructor called!");
+	Logger::War("Test Warning!!");
+	Logger::Err("Test Error!!!");
 }
 
 Game::~Game()
