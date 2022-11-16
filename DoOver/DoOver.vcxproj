@@ -106,7 +106,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -133,7 +133,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Logger.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="libs\glm\common.hpp" />
     <ClInclude Include="libs\glm\detail\compute_common.hpp" />
@@ -389,6 +388,7 @@
     <ClInclude Include="libs\lua\luaconf.h" />
     <ClInclude Include="libs\lua\lualib.h" />
     <ClInclude Include="libs\sol\sol.hpp" />
+    <ClInclude Include="src\Logger.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="libs\glm\detail\func_common.inl" />
@@ -525,7 +525,6 @@
     <None Include="libs\glm\gtx\wrap.inl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="libs\glm\detail\glm.cpp" />
     <ClCompile Include="libs\imgui\imgui.cpp" />
@@ -533,6 +532,7 @@
     <ClCompile Include="libs\imgui\imgui_draw.cpp" />
     <ClCompile Include="libs\imgui\imgui_sdl.cpp" />
     <ClCompile Include="libs\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Logger.cpp" />
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
