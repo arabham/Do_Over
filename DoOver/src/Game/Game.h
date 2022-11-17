@@ -1,7 +1,7 @@
-#pragma once
-#include <SDL.h>
-#include <SDL_image.h>
-#include <glm/glm.hpp>
+#ifndef GAME_H
+#define GAME_H
+
+#include <SDL2/SDL.h>
 
 
 class Game
@@ -27,3 +27,4 @@ private:
 	SDL_Renderer* renderer;
 };
 
+#endif
