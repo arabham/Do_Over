@@ -4,7 +4,7 @@
 #include <bitset>
 #include <vector>
 
-const usigned int MAX_COMPONENTS = 32;
+const unsigned int MAX_COMPONENTS = 32;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Signature
