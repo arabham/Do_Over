@@ -40,6 +40,9 @@ public:
 
 class Entity
 {
+private:
+    int id;
+
 public:
     Entity(int id) : id(id){};
     Entity(const Entity &entity) = default;
@@ -58,9 +61,6 @@ public:
 
     // Hold a pointer to the entity's owner registry
     class Registry* registry;
-
-private:
-    int id;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,6 +70,10 @@ private:
 /////////////////////////////////////////////////////////////////////////////////////////////
 class System
 {
+private:
+    Signature componentSignature;
+    std::vector<Entity> entities;
+
 public:
     System() = default;
     ~System() = default;
@@ -81,10 +85,6 @@ public:
 
     // Defines the component type that entities must have to be considered by the system
     template <typename TComponent> void RequireComponent();
-
-private:
-    Signature componentSignature;
-    std::vector<Entity> entities;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,6 +101,9 @@ public:
 template <typename T>
 class Pool : public IPool
 {
+private:
+    std::vector<T> data;
+
 public:
     Pool(int size = 100)
     {
@@ -147,9 +150,6 @@ public:
     {
         return data[index];
     }
-
-private:
-    std::vector<T> data;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -160,6 +160,26 @@ private:
 /////////////////////////////////////////////////////////////////////////////////////////////
 class Registry
 {
+private:
+    // Keep track of how many entities were added to the scene
+    int numEntities = 0;
+
+    // Vector of component pools.
+    // each pool contains all the data for a certain component type
+    // [vector index = componentId], [pool index = entityId]
+    std::vector<std::shared_ptr<IPool>> componentPools;
+
+    // Vector of component signatures.
+    // The signature lets us know which components are turned "on" for an entity
+    // [vector index = entity id]
+    std::vector<Signature> entityComponentSignatures;
+
+    // Map of active systems [index = system typeid]
+    std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
+
+    std::set<Entity> entitiesToBeAdded; // Entities awaiting creation in the next Registry Update()
+    std::set<Entity> entitiesToBeKilled; // Entities awaiting destruction in the next Registry Update()
+
 public:
     Registry()
     {
@@ -171,7 +191,6 @@ public:
         Logger::Log("Registry destructor called!");
     }
 
-    
     void Update();
 
     // Entity management
@@ -192,26 +211,6 @@ public:
     // Checks the component signature of an entity and add the entity to the systems
     // that are interested in it
     void AddEntityToSystems(Entity entity);
-
-private:
-    // Keep track of how many entities were added to the scene
-    int numEntities = 0;
-
-    // Vector of component pools.
-    // each pool contains all the data for a certain component type
-    // [vector index = componentId], [pool index = entityId]
-    std::vector<std::shared_ptr<IPool>> componentPools;
-
-    // Vector of component signatures.
-    // The signature lets us know which components are turned "on" for an entity
-    // [vector index = entity id]
-    std::vector<Signature> entityComponentSignatures;
-
-    // Map of active systems [index = system typeid]
-    std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
-
-    std::set<Entity> entitiesToBeAdded; // Entities awaiting creation in the next Registry Update()
-    std::set<Entity> entitiesToBeKilled; // Entities awaiting destruction in the next Registry Update()
 };
 
 template <typename TComponent>
