@@ -161,11 +161,16 @@ public:
     // Function template to add a component of type T to a given entity
     template<typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
 
+    // Ask to RemoveComponent<T> from an entity
+    template <typename TComponent> void RemoveComponent(Entity entity);
+
+    // Checks if an entity HasComponent<T>()
+    template <typename TComponent> bool HasComponent(Entity entity);
 
     void AddEntityToSystem(Entity entity);
     void KillEntity(Entity entity);
     void AddSystem();
-    void RemoveComponent();
+  
 
 private:
     // Keep track of how many entities were added to the scene
@@ -198,7 +203,7 @@ void System::RequireComponent()
 template <typename TComponent, typename ...TArgs>
 void Registry::AddComponent(Entity entity, TArgs&& ...args)
 {
-    const auto componentId = Component<T>::GetId();
+    const auto componentId = Component<TComponent>::GetId();
     const auto entityId = entity.GetId();
 
     // If the component id is greater than the current size of the componentPools, the resize the vector
@@ -210,12 +215,12 @@ void Registry::AddComponent(Entity entity, TArgs&& ...args)
     // If we still don't have a Pool for that component type
     if (!componentPools[componentId])
     {
-        Pool<T>* newComponentPool = new Pool<T>();
+        Pool<TComponent>* newComponentPool = new Pool<TComponent>();
         componentPools[componentId] = newComponentPool;
     }
 
     // Get the pool of component values for that component type
-    Pool<T>* componentPool = Pool<T>(componentPools[componentId]);
+    Pool<TComponent>* componentPool = Pool<TComponent>(componentPools[componentId]);
 
     // If the entity id is greater than the current size of the component pool, then resize the pool
     if (entityId >= componentPool->GetSize())
@@ -224,13 +229,31 @@ void Registry::AddComponent(Entity entity, TArgs&& ...args)
     }
 
     // Create a new Component object of the type T, and forward the various parameters to the constructor
-    T newComponent(std::forward<TArgs>(args)...);
+    TComponent newComponent(std::forward<TArgs>(args)...);
 
     // Add the new component to the component pool list, using the entity id as index
     componentPool->Set(entityId, newComponent);
 
     // Finally, change the component signature of the entity and set the component id on the bitset to 1
     entityComponentSignatures[entityId].set(componentId);
+}
+
+template <typename TComponent>
+void Registry::RemoveComponent(Entity entity)
+{
+    const auto componentId = Component<TComponent>::GetId();
+    const auto entityId = entity.GetId();
+
+    entityComponentSignatures[entityId].set(componentId, false);
+}
+
+template <typename TComponent>
+bool Registry::HasComponent(Entity entity)
+{
+    const auto componentId = Component<TComponent>::GetId();
+    const auto entiyId = entity.GetId();
+
+    return entityComponentSignatures[entiyId].test(componentId);
 }
 
 #endif
