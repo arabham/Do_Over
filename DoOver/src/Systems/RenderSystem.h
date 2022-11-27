@@ -6,6 +6,7 @@
 #include "../Components/SpriteComponent.h"
 #include "../AssetStore/AssetStore.h"
 #include <SDL2/SDL.h>
+#include <algorithm>
 
 class RenderSystem: public System
 {
@@ -16,10 +17,23 @@ public:
         RequireComponent<SpriteComponent>();
     }
 
+    static bool comp(const Entity& a, const Entity& b)
+    {
+        if (a.GetComponent<SpriteComponent>().zIndex < b.GetComponent<SpriteComponent>().zIndex)
+        {
+            return true;
+        }
+        return false;
+    }
+
     void Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& assetStore)
     {
+        // TODO: Sort all the entities of our system by z-index
+        std::vector<Entity> sortedEntities = GetSystemEntities();
+        std::sort(sortedEntities.begin(), sortedEntities.end(), comp);
+
         // Loop all entities that the system is interested in
-        for (auto entity: GetSystemEntities())
+        for (auto entity: sortedEntities)
         {
             // Update entity position based on its velocity
             const auto transform = entity.GetComponent<TransformComponent>();
