@@ -65,6 +65,12 @@ void Registry::AddEntityToSystems(Entity entity)
 
 void Registry::Update()
 {
-    // TODO: Add the entities that are waiting to be created to the active Systems
+    // Add the entities that are waiting to be created to the active Systems
+    for (auto entity: entitiesToBeAdded)
+    {
+        AddEntityToSystems(entity);
+    }
+    entitiesToBeAdded.clear();
+    
     // TODO: Remove the entities that are waiting to be killed from the active Systems
 }
