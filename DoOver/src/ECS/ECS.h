@@ -155,22 +155,23 @@ public:
 
     void Update();
 
-    // Management of entities, systems, and components
+    // Entity management
     Entity CreateEntity();
 
-    // Function template to add a component of type T to a given entity
-    template<typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
-
-    // Ask to RemoveComponent<T> from an entity
+    // Component management
+    template <typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
     template <typename TComponent> void RemoveComponent(Entity entity);
+    template <typename TComponent> bool HasComponent(Entity entity) const;
 
-    // Checks if an entity HasComponent<T>()
-    template <typename TComponent> bool HasComponent(Entity entity);
+    // System management
+    template <typename TSystem, typename ...TArgs> void AddSystem(TArgs&& ...args);
+    template <typename TSystem> void RemoveSystem();
+    template <typename TSystem> bool HasSystem() const;
+    template <typename TSystem> TSystem& GetSystem() const;
 
-    void AddEntityToSystem(Entity entity);
-    void KillEntity(Entity entity);
-    void AddSystem();
-  
+    // Checks the component signature of an entity and add the entity to the systems
+    // that are interested in it
+    void AddEntityToSystems(Entity entity);
 
 private:
     // Keep track of how many entities were added to the scene
@@ -248,12 +249,39 @@ void Registry::RemoveComponent(Entity entity)
 }
 
 template <typename TComponent>
-bool Registry::HasComponent(Entity entity)
+bool Registry::HasComponent(Entity entity) const
 {
     const auto componentId = Component<TComponent>::GetId();
     const auto entiyId = entity.GetId();
 
     return entityComponentSignatures[entiyId].test(componentId);
+}
+
+template <typename TSystem, typename ...TArgs>
+void Registry::AddSystem(TArgs&& ...args)
+{
+    TSystem* newSystem(new TSystem(std::forward<TArgs>(args)...));
+    systems.insert(std::make_pair(std::type_index(typeid(TSystem)), newSystem));
+}
+
+template <typename TSystem>
+void Registry::RemoveSystem()
+{
+    auto system = systems.find(std::type_index(typeid(TSystem)));
+    systems.erase(system);
+}
+
+template <typename TSystem> 
+bool Registry::HasSystem() const
+{
+    return systems.find(std::type_index(typeid(TSystem))) != systems.end();
+}
+
+template <typename TSystem>
+TSystem& Registry::GetSystem() const
+{
+    auto system = systems.find(std::type_index(typeid(TSystem)));
+    return *(std::static_pointer_cast<TSystem>(system->second));
 }
 
 #endif
