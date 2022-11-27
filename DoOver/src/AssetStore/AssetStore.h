@@ -1,8 +1,8 @@
 #ifndef ASSETSTORE_H
 #define ASSETSTORE_H
 
-#include <string>
 #include <map>
+#include <string>
 #include <SDL2/SDL.h>
 
 class AssetStore
@@ -13,8 +13,11 @@ private:
     // TODO: std::map<std::string, SDL_Audio* sounds
 
 public:
+    AssetStore();
+    ~AssetStore();
+
     void ClearAssets();
-    void AddTexture(const std::string& assetId, const std::string& filePath);
+    void AddTexture(SDL_Renderer* renderer, const std::string& assetId, const std::string& filePath);
     SDL_Texture* GetTexture(const std::string& assetId);
 };
 
