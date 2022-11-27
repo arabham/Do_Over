@@ -4,6 +4,8 @@
 #include "../ECS/ECS.h"
 #include <SDL2/SDL.h>
 
+const int FPS = 60;
+const int MILLISECS_PER_FRAME = 1000 / FPS;
 
 class Game
 {
@@ -11,11 +13,11 @@ public:
 	Game();
 	~Game();
 	void Initialize();
-	void ProcessInput();
+	void Run();
 	void Setup();
+	void ProcessInput();
 	void Update();
 	void Render();
-	void Run();
 	void Destroy();
 
 	int windowWidth;

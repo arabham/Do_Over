@@ -3,6 +3,9 @@
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidBodyComponent.h"
+#include "../Components/SpriteComponent.h"
+#include "../Systems/MovementSystem.h"
+#include "../Systems/RenderSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
@@ -83,26 +86,41 @@ void Game::ProcessInput()
 
 void Game::Setup()
 {
+	// Add the system that need to be processed in our game
+	registry->AddSystem<MovementSystem>();
+	registry->AddSystem<RenderSystem>();
+
 	// Create some entities
 	Entity tank = registry->CreateEntity();
-	
-	// Add some components to that entitiy
 	tank.AddComponent<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(1.0, 1.0), 0.0);
-	tank.AddComponent<RigidBodyComponent>(glm::vec2(10.0, 50.0));
+	tank.AddComponent<RigidBodyComponent>(glm::vec2(40.0, 0.0));
+	tank.AddComponent<SpriteComponent>(10,10);
 
-	// Removed a component from the entity
-	tank.RemoveComponent<TransformComponent>();
+	Entity truck = registry->CreateEntity();
+	tank.AddComponent<TransformComponent>(glm::vec2(50.0, 100.0), glm::vec2(1.0, 1.0), 0.0);
+	tank.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 50.0));
+	tank.AddComponent<SpriteComponent>(10, 50);
 }
 
 void Game::Update()
 {
+    // If we are too fast, waste some time until we reach the MILLISECS_PER_FRAME
+    int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
+	    if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
+        SDL_Delay(timeToWait);
+    }
+
 	// The difference in ticks since the last frame, converted to seconds
-	double deltaTime = (SDL_GetTicks() - millisecsPreviousFrame) / 1000.0f;
+	double deltaTime = (SDL_GetTicks() - millisecsPreviousFrame) / 1000.0;
+
 	// Store the current frame time
 	millisecsPreviousFrame = SDL_GetTicks();
 
-	// TODO:
-	// MovementSystem.Update();
+	// Update the registry to process the entities that are waiting to be created/deleted
+	registry->Update();
+	
+	// Inkove all the systems that need to update
+	registry->GetSystem<MovementSystem>().Update(deltaTime);
 }
 
 void Game::Render()
@@ -110,12 +128,8 @@ void Game::Render()
 	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 	SDL_RenderClear(renderer);
 
-	// Loads a PNG texture
-	SDL_Surface* surface = IMG_Load("./assets/images/tank-tiger-right.png");
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-	SDL_FreeSurface(surface);
-
-	SDL_DestroyTexture(texture);
+	// Inkove all the systems that need to render
+	registry->GetSystem<RenderSystem>().Update(renderer);
 
 	SDL_RenderPresent(renderer);
 }

@@ -2,11 +2,11 @@
 #define ECS_H
 
 #include "../Logger/Logger.h"
-#include <bitset>
 #include <vector>
+#include <bitset>
+#include <set>
 #include <unordered_map>
 #include <typeindex>
-#include <set>
 #include <memory>
 
 const unsigned int MAX_COMPONENTS = 32;
@@ -80,8 +80,7 @@ public:
     const Signature &GetComponentSignature() const;
 
     // Defines the component type that entities must have to be considered by the system
-    template <typename TComponent>
-    void RequireComponent();
+    template <typename TComponent> void RequireComponent();
 
 private:
     Signature componentSignature;
@@ -172,6 +171,7 @@ public:
         Logger::Log("Registry destructor called!");
     }
 
+    
     void Update();
 
     // Entity management
