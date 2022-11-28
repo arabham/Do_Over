@@ -2,6 +2,8 @@
 #define COLLISIONSYSTEM_H
 
 #include "../ECS/ECS.h"
+#include "../EventBus/EventBus.h"
+#include "../Events/CollisionEvent.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/BoxColliderComponent.h"
 
@@ -14,7 +16,7 @@ public:
         RequireComponent<BoxColliderComponent>();
     }
 
-    void Update()
+    void Update(std::unique_ptr<EventBus>& eventBus)
     {
         auto entities = GetSystemEntities();
         // Loop all the entities that the system is interested in
@@ -53,6 +55,7 @@ public:
                 {
                     Logger::Log("Entity " + std::to_string(a.GetId()) + " is colliding with entity " + std::to_string(b.GetId()));
                     
+                    eventBus->EmitEvent<CollisionEvent>(a, b);
                 }
             }
         }

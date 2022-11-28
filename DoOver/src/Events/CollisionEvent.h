@@ -10,7 +10,6 @@ public:
     Entity a;
     Entity b;
     CollisionEvent(Entity a, Entity b): a(a), b(b) {}
-    ~CollisionEvent();
 };
 
 #endif

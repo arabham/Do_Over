@@ -7,6 +7,7 @@
 #include <typeindex>
 #include <list>
 #include <memory>
+#include <functional>
 
 class IEventCallback 
 {
@@ -62,6 +63,12 @@ public:
         Logger::Log("EventBus destructor called!");
     }
 
+    // Clears the subscriber list
+    void Reset()
+    {
+        subscribers.clear();
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////
     // Subscribe to an event type <T>
     // In our implementation, a listener subscribes to an event
@@ -70,7 +77,7 @@ public:
     template <typename TEvent, typename TOwner>
     void SubscribeToEvent (TOwner* ownerInstance, void (TOwner::*callbackFunction)(TEvent&))
     {
-        if (!subscribers[typeid(TEvent)].get() == nullptr)
+        if (!subscribers[typeid(TEvent)].get())
         {
             subscribers[typeid(TEvent)] = std::make_unique<HandlerList>();
         }
