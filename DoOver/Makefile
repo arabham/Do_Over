@@ -21,6 +21,10 @@ build:
 
 run:
 	./$(OBJ_NAME)
+	
+brun:
+	$(CC) $(COMPILER_FLAGS) $(LANG_STD) $(INCLUDE_PATH) $(SRC_FILES) $(LINKER_FLAGS) -o $(OBJ_NAME)
+	./$(OBJ_NAME)
 
 clean:
 	rm $(OBJ_NAME)

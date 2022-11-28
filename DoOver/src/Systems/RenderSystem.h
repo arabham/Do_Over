@@ -17,23 +17,17 @@ public:
         RequireComponent<SpriteComponent>();
     }
 
-    static bool comp(const Entity& a, const Entity& b)
-    {
-        if (a.GetComponent<SpriteComponent>().zIndex < b.GetComponent<SpriteComponent>().zIndex)
-        {
-            return true;
-        }
-        return false;
-    }
-
     void Update(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& assetStore)
     {
         // TODO: Sort all the entities of our system by z-index
-        std::vector<Entity> sortedEntities = GetSystemEntities();
-        std::sort(sortedEntities.begin(), sortedEntities.end(), comp);
+        std::vector<Entity> renderableEntities = GetSystemEntities();
+        std::sort(renderableEntities.begin(), renderableEntities.end(), [](const Entity& a, const Entity& b)
+        {
+            return a.GetComponent<SpriteComponent>().zIndex < b.GetComponent<SpriteComponent>().zIndex;
+        });
 
         // Loop all entities that the system is interested in
-        for (auto entity: sortedEntities)
+        for (auto entity: renderableEntities)
         {
             // Update entity position based on its velocity
             const auto transform = entity.GetComponent<TransformComponent>();
