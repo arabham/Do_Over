@@ -6,7 +6,10 @@
 #include "../Components/SpriteComponent.h"
 #include "../Components/AnimationComponent.h"
 #include "../Components/BoxColliderComponent.h"
+#include "../Components/KeyboardControlledComponent.h"
+#include "../Components/CameraFollowComponent.h"
 #include "../Systems/MovementSystem.h"
+#include "../Systems/CameraMovementSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
 #include "../Systems/CollisonSystem.h"
@@ -18,6 +21,11 @@
 #include <glm/glm.hpp>
 #include <iostream>
 #include <fstream>
+
+int Game::windowWidth;
+int Game::windowHeight;
+int Game::mapWidth;
+int Game::mapHeight;
 
 Game::Game()
 {
@@ -59,18 +67,19 @@ void Game::Initialize()
 		Logger::Err("Error creating SDL window.");
 		return;
 	}
-	renderer = SDL_CreateRenderer
-	(
-		window,
-		-1,
-		SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
-	);
+	renderer = SDL_CreateRenderer(window, -1, 0);
 	if (!renderer)
 	{
 		Logger::Err("Error creating SDL renderer.");
 		return;
 	}
+	// Initialize the camera view with the entire screen area
+	camera.x = 0;
+	camera.y = 0;
+	camera.w = windowWidth;
+	camera.h = windowHeight;
 	SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+
 	isRunning = true;
 }
 
@@ -99,10 +108,6 @@ void Game::ProcessInput()
 	}
 }
 
-void Game::Setup()
-{
-	LoadLevel(1);
-}
 
 void Game::LoadLevel(int level)
 {
@@ -114,11 +119,12 @@ void Game::LoadLevel(int level)
 	registry->AddSystem<RenderColliderSystem>();
 	registry->AddSystem<DamageSystem>();
 	registry->AddSystem<KeyboardControlSystem>();
+	registry->AddSystem<CameraMovementSystem>();
 
 	// Adding assets to the asset store
 	assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
 	assetStore->AddTexture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
-	assetStore->AddTexture(renderer, "chopper-image", "./assets/images/chopper.png");
+	assetStore->AddTexture(renderer, "chopper-image", "./assets/images/chopper-spritesheet.png");
 	assetStore->AddTexture(renderer, "radar-image", "./assets/images/radar.png");
 	assetStore->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
 	
@@ -153,13 +159,17 @@ void Game::LoadLevel(int level)
 		}
 	}
 	mapFile.close();
+	mapWidth = mapNumCols * tileSize * tileScale;
+	mapHeight = mapNumRows * tileSize * tileScale;
 
 	// Create some entities
 	Entity chopper = registry->CreateEntity();
-	chopper.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0), glm::vec2(1.0, 1.0), 0.0);
+	chopper.AddComponent<TransformComponent>(glm::vec2(10.0, 100.0), glm::vec2(1.0, 1.0), 0.0);
 	chopper.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
 	chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 1);
 	chopper.AddComponent<AnimationComponent>(2, 15, true);
+	chopper.AddComponent<KeyboardControlledComponent>(glm::vec2(0, -80), glm::vec2(80, 0), glm::vec2(0, 80), glm::vec2(-80, 0));
+	chopper.AddComponent<CameraFollowComponent>();
 
 	Entity radar = registry->CreateEntity();
 	radar.AddComponent<TransformComponent>(glm::vec2(windowWidth - 74, 10.0), glm::vec2(1.0, 1.0), 0.0);
@@ -178,6 +188,11 @@ void Game::LoadLevel(int level)
 	truck.AddComponent<RigidBodyComponent>(glm::vec2(30.0, 0.0));
 	truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 2);
 	truck.AddComponent<BoxColliderComponent>(32, 32);
+}
+
+void Game::Setup()
+{
+	LoadLevel(1);
 }
 
 void Game::Update()
@@ -208,6 +223,7 @@ void Game::Update()
 	registry->GetSystem<MovementSystem>().Update(deltaTime);
 	registry->GetSystem<AnimationSystem>().Update();
 	registry->GetSystem<CollisionSystem>().Update(eventBus);
+	registry->GetSystem<CameraMovementSystem>().Update(camera);
 
 }
 
@@ -217,10 +233,10 @@ void Game::Render()
 	SDL_RenderClear(renderer);
 
 	// Inkove all the systems that need to render
-	registry->GetSystem<RenderSystem>().Update(renderer, assetStore);
+	registry->GetSystem<RenderSystem>().Update(renderer, assetStore, camera);
 	if (isDebug)
 	{
-		registry->GetSystem<RenderColliderSystem>().Update(renderer);
+		registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
 	}
 	SDL_RenderPresent(renderer);
 }
