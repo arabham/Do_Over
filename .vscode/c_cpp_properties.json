@@ -1,15 +1,20 @@
 {
+    "env": {
+        "myDefaultIncludePath": ["${workspaceFolder}","${workspaceFolder}/DoOver/libs/**", "/usr/include/**"],
+        "myCompilerPath": "/usr/bin/g++"
+    },
     "configurations": [
         {
             "name": "Linux",
+            "intelliSenseMode": "linux-gcc-x64",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${myDefaultIncludePath}"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/gcc",
+            "compilerPath": "/usr/bin/g++",
             "cStandard": "gnu17",
             "cppStandard": "gnu++17",
-            "intelliSenseMode": "linux-gcc-x64",
+
             "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
