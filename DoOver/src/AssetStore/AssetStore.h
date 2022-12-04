@@ -7,18 +7,18 @@
 
 class AssetStore
 {
-private:
-    std::map<std::string, SDL_Texture*> textures;
-    // TODO: std::map<std::string, TTF_Font* fonts
-    // TODO: std::map<std::string, SDL_Audio* sounds
+    private:
+        std::map<std::string, SDL_Texture*> textures;
+        // TODO: std::map<std::string, TTF_Font* fonts
+        // TODO: std::map<std::string, SDL_Audio* sounds
 
-public:
-    AssetStore();
-    ~AssetStore();
+    public:
+        AssetStore();
+        ~AssetStore();
 
-    void ClearAssets();
-    void AddTexture(SDL_Renderer* renderer, const std::string& assetId, const std::string& filePath);
-    SDL_Texture* GetTexture(const std::string& assetId);
+        void ClearAssets();
+        void AddTexture(SDL_Renderer* renderer, const std::string& assetId, const std::string& filePath);
+        SDL_Texture* GetTexture(const std::string& assetId);
 };
 
 #endif

@@ -14,7 +14,7 @@
 #include "../Systems/CameraMovementSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
-#include "../Systems/CollisonSystem.h"
+#include "../Systems/CollisionSystem.h"
 #include "../Systems/RenderColliderSystem.h"
 #include "../Systems/DamageSystem.h"
 #include "../Systems/ProjectileEmitSystem.h"
@@ -57,8 +57,7 @@ void Game::Initialize()
 	SDL_GetCurrentDisplayMode(0, &displayMode);
 	windowWidth = displayMode.w;
 	windowHeight = displayMode.h;
-	window = SDL_CreateWindow
-	(
+    window = SDL_CreateWindow(
 		NULL,
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
@@ -82,8 +81,8 @@ void Game::Initialize()
 	camera.y = 0;
 	camera.w = windowWidth;
 	camera.h = windowHeight;
-	SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
+	SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 	isRunning = true;
 }
 
@@ -207,7 +206,8 @@ void Game::Update()
 {
     // If we are too fast, waste some time until we reach the MILLISECS_PER_FRAME
     int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
-	    if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
+    if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) 
+    {
         SDL_Delay(timeToWait);
     }
 
@@ -231,8 +231,8 @@ void Game::Update()
 	registry->GetSystem<MovementSystem>().Update(deltaTime);
 	registry->GetSystem<AnimationSystem>().Update();
 	registry->GetSystem<CollisionSystem>().Update(eventBus);
-	registry->GetSystem<CameraMovementSystem>().Update(camera);
 	registry->GetSystem<ProjectileEmitSystem>().Update(registry);
+	registry->GetSystem<CameraMovementSystem>().Update(camera);
 	registry->GetSystem<ProjectileLifecycleSystem>().Update();
 
 }

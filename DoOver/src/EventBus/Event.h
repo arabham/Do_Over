@@ -3,8 +3,8 @@
 
 class Event
 {
-public:
-    Event() = default;
+    public:
+        Event() = default;
 };
 
 #endif

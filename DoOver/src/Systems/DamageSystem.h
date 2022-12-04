@@ -2,34 +2,37 @@
 #define DAMAGESYSTEM_H
 
 #include "../ECS/ECS.h"
+#include "../Components/BoxColliderComponent.h"
 #include "../EventBus/EventBus.h"
 #include "../Events/CollisionEvent.h"
-#include "../Components/BoxColliderComponent.h"
 
 class DamageSystem: public System
 {
-public:
-    DamageSystem()
-    {
-        RequireComponent<BoxColliderComponent>();
-    }
+    public:
+        DamageSystem()
+        {
+            RequireComponent<BoxColliderComponent>();
+        }
 
-    void SubscribeToEvents(std::unique_ptr<EventBus>& eventBus)
-    {
-        eventBus->SubscribeToEvent<CollisionEvent>(this, &DamageSystem::OnCollision);
-    }
+        void SubscribeToEvents(std::unique_ptr<EventBus>& eventBus)
+        {
+            eventBus->SubscribeToEvent<CollisionEvent>(this, &DamageSystem::OnCollision);
+        }
 
-    void OnCollision(CollisionEvent& event)
-    {
-        Logger::Log("The damage system received an event collision between entities " + std::to_string(event.a.GetId()) + " and " + std::to_string(event.b.GetId()));
-        //event.a.Kill();
-        //event.b.Kill();
-    }
+        void OnCollision(CollisionEvent& event)
+        {
+            std::string aId = std::to_string(event.a.GetId());
+            std::string bId = std::to_string(event.b.GetId());
+            Logger::Log("Collision event emitted: " + aId + " and " + bId);
+            
+            //event.a.Kill();
+            //event.b.Kill();
+        }
 
-    void Update()
-    {
+        void Update()
+        {
 
-    }
+        }
 };
 
-#endif
+#endif /* DAMAGESYSTEM_H */

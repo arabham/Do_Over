@@ -19,11 +19,11 @@ struct LogEntry
 
 class Logger
 {
-public:
-	static std::vector<LogEntry> messages;
-	static void Log(const std::string& message);
-	static void War(const std::string& message);
-	static void Err(const std::string& message);
+	public:
+		static std::vector<LogEntry> messages;
+		static void Log(const std::string& message);
+		static void War(const std::string& message);
+		static void Err(const std::string& message);
 };
 
 #endif

@@ -6,25 +6,25 @@
 
 class ProjectileLifecycleSystem: public System
 {
-public:
-    ProjectileLifecycleSystem()
-    {
-        RequireComponent<ProjectileComponent>();
-    }
-
-    void Update()
-    {
-        for (auto entity: GetSystemEntities())
+    public:
+        ProjectileLifecycleSystem()
         {
-            auto projectile = entity.GetComponent<ProjectileComponent>();
+            RequireComponent<ProjectileComponent>();
+        }
 
-            // Kill projectiles after they reach their duration limit
-            if (SDL_GetTicks() - static_cast<int>(projectile.startTime > projectile.duration))
+        void Update()
+        {
+            for (auto entity: GetSystemEntities())
             {
-                entity.Kill();
+                auto projectile = entity.GetComponent<ProjectileComponent>();
+
+                // Kill projectiles after they reach their duration limit
+                if (static_cast<int>(SDL_GetTicks() - projectile.startTime) > projectile.duration)
+                {
+                    entity.Kill();
+                }
             }
         }
-    }
 };
 
 #endif /* PROJECTILELIFECYCLESYSTEM_H */

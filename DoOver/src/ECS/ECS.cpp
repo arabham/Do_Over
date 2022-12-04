@@ -21,9 +21,9 @@ void System::AddEntityToSystem(Entity entity)
 
 void System::RemoveEntityFromSystem(Entity entity)
 {
-    entities.erase(std::remove_if(entities.begin(), entities.end(), [&entity](Entity other)
-                                  { return entity == other; }),
-                   entities.end());
+    entities.erase(std::remove_if(entities.begin(), entities.end(), [&entity](Entity other) {
+        return entity == other; 
+    }), entities.end());
 }
 
 std::vector<Entity> System::GetSystemEntities() const
@@ -46,12 +46,12 @@ Entity Registry::CreateEntity()
         {
             entityComponentSignatures.resize(entityId + 1);
         }
-        else
-        {
-            // Reuse an id from the list of previously removed entities
-            entityId = freeIds.front();
-            freeIds.pop_front();
-        }
+    }
+    else
+    {
+        // Reuse an id from the list of previously removed entities
+        entityId = freeIds.front();
+        freeIds.pop_front();
     }
 
     Entity entity(entityId);
@@ -66,6 +66,8 @@ Entity Registry::CreateEntity()
 void Registry::KillEntity(Entity entity)
 {
     entitiesToBeKilled.insert(entity);
+
+    Logger::Log("Entity " + std::to_string(entity.GetId()) + " was killed");
 }
 
 void Registry::AddEntityToSystems(Entity entity)
